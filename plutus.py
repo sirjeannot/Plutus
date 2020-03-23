@@ -3,13 +3,14 @@
 # https://github.com/Isaacdelly/Plutus
 
 import os
+import time
 import pickle
 import hashlib
 import binascii
 import multiprocessing
 from ellipticcurve.privateKey import PrivateKey
 
-DATABASE = r'database/MAR_23_2019/'
+DATABASE = r'database/'
 
 def generate_private_key(): 
 	"""
@@ -68,8 +69,8 @@ def process(private_key, public_key, address, database):
 				   'WIF private key: ' + str(private_key_to_WIF(private_key)) + '\n' +
 			      	   'public key: ' + str(public_key) + '\n' +
 			           'address: ' + str(address) + '\n\n')
-	else: 
-		print(str(address))
+#	else: 
+#		print(str(address))
 
 def private_key_to_WIF(private_key):
 	"""
@@ -101,13 +102,24 @@ def main(database):
 	functions are relatively fast, it is better to combine them all into 
 	one process.
 	"""
+	t0 = time.time()
+	iter = 0
+	thr_id = str(multiprocessing.current_process().name).split('-')[1]
 	while True:
-		private_key = generate_private_key()			# 0.0000061659 seconds
-		public_key = private_key_to_public_key(private_key) 	# 0.0031567731 seconds
-		address = public_key_to_address(public_key)		# 0.0000801390 seconds
-		process(private_key, public_key, address, database) 	# 0.0000026941 seconds
-									# --------------------
-									# 0.0032457721 seconds
+		private_key = generate_private_key()                    # 0.0000061659 seconds
+		public_key = private_key_to_public_key(private_key)     # 0.0031567731 seconds
+		address = public_key_to_address(public_key)             # 0.0000801390 seconds
+		process(private_key, public_key, address, database)     # 0.0000026941 seconds
+                                                                        # --------------------
+                                                                        # 0.0032457721 seconds
+		iter += 1
+		if ((time.time() - t0) >= 1):
+			for i in range(int(thr_id)):
+				print('\t', end = ' ')
+			print(thr_id + ':' + str(iter) + '/s', end = '\r')
+			iter = 0
+			t0 = time.time()
+
 
 if __name__ == '__main__':
 	"""

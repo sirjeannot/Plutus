@@ -1,10 +1,16 @@
+# Fork to support fastecda
+
+Credits to Isaacdelly for the initial implementation. This fork aims at using the <a href="https://github.com/AntonKueltz/fastecdsa">fastecdsa</a> library to generate the private key as it is currently the fastest library (as far as I know at time of writing).
+A quick benchmark on a Corei7 4220HQ (no boost, Win10, WSL2) : 330 tries /s /thread vs 190 with the starkbank-ecda implementation.
+Credits also to https://github.com/secretnumber/utxodump for the database files used.
+
 # Plutus Bitcoin Brute Forcer
 
 A Bitcoin wallet collider that brute forces random wallet addresses
 
 # Like This Project? Give It A Star
 
-[![](https://img.shields.io/github/stars/Isaacdelly/Plutus.svg)](https://github.com/Isaacdelly/Plutus)
+[![](https://img.shields.io/github/stars/sirjeannot/Plutus.svg)](https://github.com/sirjeannot/Plutus)
 
 # Dependencies
 
@@ -16,16 +22,23 @@ Minimum <a href="#memory-consumption">RAM requirements</a>
 
 # Installation
 
+Dependencies of fastecda should also be installed, depending on the distribution you are using.
 ```
-$ git clone https://github.com/Isaacdelly/Plutus.git plutus
+$ mkdir plutus && cd plutus && mkdir database && touch plutus.txt
 
-$ cd plutus && pip3 install -r requirements.txt
+$ wget https://raw.githubusercontent.com/sirjeannot/Plutus/master/plutus-fast.py
+
+$ apt-get install python-dev libgmp3-dev
+
+& pip3 install fastecdsa
+
+$ for i in 0{0..9} {10..11}; do wget https://github.com/secretnumber/utxodump/blob/master/FEB-07-2020/${i}.pickle?raw=true -O database/${i}.pickle; done
 ```
 
 # Quick Start
 
 ```
-$ python3 plutus.py
+$ python3 plutus-fast.py
 ```
 
 # Proof Of Concept
@@ -48,7 +61,7 @@ This program also utilizes multiprocessing through the `multiprocessing.Process(
 
 It takes `0.0032457721` seconds for this progam to brute force a __single__ Bitcoin address. 
 
-However, through `multiprocessing.Process()` a concurrent process is created for every CPU your computer has. So this program can brute force addresses at a speed of `0.0032457721 ÷ cpu_count()` seconds.
+However, through `multiprocessing.Process()` a concurrent process is created for every CPU your computer has. So this program can brute force addresses at a speed of `0.0032457721 ? cpu_count()` seconds.
 
 # Database FAQ
 
